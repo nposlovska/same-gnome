@@ -1,0 +1,71 @@
+body {
+    color: #2e6f9e;
+    background: #fefccd;
+}
+.cell {
+    width: 32px;
+    height: 32px;
+    float: left;
+    text-align: center;
+}
+.active {
+    background: #000;
+}
+.row {
+    clear: both;
+    overflow: hidden;
+}
+.count {
+    border: 2px solid #c27c4e;
+    width: 40px;
+    clear: both;
+    margin-bottom: 10px;
+}
+#table {
+    border: 2px solid #c27c4e;
+    display: inline-block;
+    clear: both;
+    -ms-transform: rotate(270deg); /* IE 9 */
+    -webkit-transform: rotate(270deg); /* Chrome, Safari, Opera */
+    transform: rotate(270deg);
+    min-height: 960px;
+    min-width: 644px;
+    position: absolute;
+    left: 170px;
+    top: 4px;
+}
+.circle {
+    width: 28px;
+    height: 28px;
+    border: 1px solid;
+    border-radius: 15px;
+    cursor: pointer;
+}
+.blue .circle {
+    background: -webkit-radial-gradient(white, blue); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(white, blue); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(white, blue); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(white, blue); /* Standard syntax */
+    border-color: blue;
+}
+.red .circle {
+    background: -webkit-radial-gradient(white, red); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(white, red); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(white, red); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(white, red); /* Standard syntax */
+    border-color: red;
+}
+.yellow .circle {
+    background: -webkit-radial-gradient(white, orange); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(white, orange); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(white, orange); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(white, orange); /* Standard syntax */
+    border-color: orange;
+}
+.green .circle {
+    background: -webkit-radial-gradient(white, green); /* Safari 5.1 to 6.0 */
+    background: -o-radial-gradient(white, green); /* For Opera 11.6 to 12.0 */
+    background: -moz-radial-gradient(white, green); /* For Firefox 3.6 to 15 */
+    background: radial-gradient(white, green); /* Standard syntax */
+    border-color: green;
+}
