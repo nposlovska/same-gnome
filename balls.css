@@ -1,10 +1,21 @@
 body {
-    color: #2e6f9e;
-    background: #fefccd;
+    --border-color: #c27c4e;
+    --white-color: #fff;
+    --blue-color: #00bcd4;
+    --green-color: #01c414;
+    --yellow-color: #ffc107;
+    --red-color: pink;
+    --text-color: #2e6f9e;
+    --background-color: #fefccd;
+    --cell-size: 32px;
+    --ball-size: 28px;
+
+    color: var(--text-color);
+    background: var(--background-color);
 }
 .cell {
-    width: 32px;
-    height: 32px;
+    width: var(--cell-size);
+    height: var(--cell-size);
     float: left;
     text-align: center;
 }
@@ -16,17 +27,15 @@ body {
     overflow: hidden;
 }
 .count {
-    border: 2px solid #c27c4e;
+    border: 2px solid var(--border-color);
     width: 40px;
     clear: both;
     margin-bottom: 10px;
 }
 #table {
-    border: 2px solid #c27c4e;
+    border: 2px solid  var(--border-color);
     display: inline-block;
     clear: both;
-    -ms-transform: rotate(270deg); /* IE 9 */
-    -webkit-transform: rotate(270deg); /* Chrome, Safari, Opera */
     transform: rotate(270deg);
     min-height: 960px;
     min-width: 644px;
@@ -35,37 +44,25 @@ body {
     top: 4px;
 }
 .circle {
-    width: 28px;
-    height: 28px;
+    width: var(--ball-size);
+    height: var(--ball-size);
     border: 1px solid;
     border-radius: 15px;
     cursor: pointer;
 }
 .blue .circle {
-    background: -webkit-radial-gradient(white, blue); /* Safari 5.1 to 6.0 */
-    background: -o-radial-gradient(white, blue); /* For Opera 11.6 to 12.0 */
-    background: -moz-radial-gradient(white, blue); /* For Firefox 3.6 to 15 */
-    background: radial-gradient(white, blue); /* Standard syntax */
-    border-color: blue;
+    background: radial-gradient(var(--white-color), var(--blue-color));
+    border-color: var(--blue-color);
 }
 .red .circle {
-    background: -webkit-radial-gradient(white, red); /* Safari 5.1 to 6.0 */
-    background: -o-radial-gradient(white, red); /* For Opera 11.6 to 12.0 */
-    background: -moz-radial-gradient(white, red); /* For Firefox 3.6 to 15 */
-    background: radial-gradient(white, red); /* Standard syntax */
-    border-color: red;
+    background: radial-gradient(var(--white-color), var(--red-color));
+    border-color: var(--red-color);
 }
 .yellow .circle {
-    background: -webkit-radial-gradient(white, orange); /* Safari 5.1 to 6.0 */
-    background: -o-radial-gradient(white, orange); /* For Opera 11.6 to 12.0 */
-    background: -moz-radial-gradient(white, orange); /* For Firefox 3.6 to 15 */
-    background: radial-gradient(white, orange); /* Standard syntax */
-    border-color: orange;
+    background: radial-gradient(var(--white-color), var(--yellow-color));
+    border-color: var(--yellow-color);
 }
 .green .circle {
-    background: -webkit-radial-gradient(white, green); /* Safari 5.1 to 6.0 */
-    background: -o-radial-gradient(white, green); /* For Opera 11.6 to 12.0 */
-    background: -moz-radial-gradient(white, green); /* For Firefox 3.6 to 15 */
-    background: radial-gradient(white, green); /* Standard syntax */
-    border-color: green;
+    background: radial-gradient(var(--white-color), var(--green-color));
+    border-color: var(--green-color);
 }
