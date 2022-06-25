@@ -2,10 +2,16 @@
     'use strict';
 
     const COLORS = ['red', 'yellow', 'blue', 'green'];
-    const ACTIVE_CLASS = 'active';
-    const BALL_CLASS = 'circle';
-    const CELL_CLASS = 'cell';
-    const ROW_CLASS = 'row';
+    const CLASSES = Object.freeze({
+        ACTIVE: 'active',
+        BALL: 'ball',
+        CELL: 'cell',
+        ROW: 'row',
+        TABLE: 'table',
+        CURRENT_SCORE: 'current',
+        POSSIBLE_SCORE: 'possible',
+        BEST_SCORE: 'best'
+    });
 
     function createProto(className) {
         let proto = document.createElement('div');
@@ -17,15 +23,19 @@
         return [...element.parentElement.children].indexOf(element);
     }
 
+    function getRandom(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
     class Balls {
-        tableDom = document.getElementById('table');
-        scoreDom = document.getElementById('counter');
-        possibleScoreDom = document.getElementById('possible_count');
-        bestScoreDom = document.getElementById('best');
-        sizeX = 30;
-        sizeY = 20;
-        cells = [];
+        tableDom = document.getElementById(CLASSES.TABLE);
+        scoreDom = document.getElementById(CLASSES.CURRENT_SCORE);
+        possibleScoreDom = document.getElementById(CLASSES.POSSIBLE_SCORE);
+        bestScoreDom = document.getElementById(CLASSES.BEST_SCORE);
+        sizeX = 10;
+        sizeY = 15;
         score = 0;
+        cells = [];
 
         constructor() {
             this.loadGrid();
@@ -35,20 +45,20 @@
         loadGrid() {
             this.scoreDom.textContent = this.score;
 
-            for (let i = 0; i < this.sizeX; i++) {
-                let row = createProto(ROW_CLASS);
+            for (let y = 0; y < this.sizeY; y++) {
+                let row = createProto(CLASSES.ROW);
 
-                this.cells[i] = [];
-                for (let j = 0; j < this.sizeY; j++) {
-                    let cell = createProto(CELL_CLASS);
-                    cell.appendChild(createProto(BALL_CLASS));
+                this.cells[y] = [];
+                for (let x = 0; x < this.sizeX; x++) {
+                    let cell = createProto(CLASSES.CELL);
+                    cell.appendChild(createProto(CLASSES.BALL));
 
                     let colorNumber = getRandom(0, COLORS.length);
                     cell.classList.add(COLORS[colorNumber]);
                     row.appendChild(cell);
 
-                    this.cells[i][j] = {
-                        is_checked: false, color: colorNumber, dom: cell
+                    this.cells[y][x] = {
+                        isChecked: false, color: colorNumber, dom: cell
                     };
                 }
 
@@ -64,30 +74,32 @@
         }
 
         bindEvents() {
-            addEvent(this.tableDom, 'mouseover', e => {
-                if (e.target.classList.contains(BALL_CLASS)) {
+            this.tableDom.addEventListener('mouseover', e => {
+                if (e.target.classList.contains(CLASSES.BALL)) {
                     this.showCluster(...this.getCoordinates(e.target));
                 }
-            });
-            addEvent(this.tableDom, 'mouseout', e => {
-                if (e.target.classList.contains(BALL_CLASS)) {
+            }, false);
+
+            this.tableDom.addEventListener('mouseout', e => {
+                if (e.target.classList.contains(CLASSES.BALL)) {
                     this.hideCluster(...this.getCoordinates(e.target));
                 }
-            });
-            addEvent(this.tableDom, 'click', e => {
-                if (e.target.classList.contains(BALL_CLASS)) {
+            }, false);
+
+            this.tableDom.addEventListener('click', e => {
+                if (e.target.classList.contains(CLASSES.BALL)) {
                     this.removeCluster(...this.getCoordinates(e.target));
                 }
-            });
+            }, false);
         };
 
         checkGameEnd() {
-            let isSmthLeft;
-            this.cells.forEach((row, y) => {
-               isSmthLeft = row.some((cell, x) => this.getCluster(x, y).length > 1);
-            });
+            for (let y = 0; y < this.cells.length; y++) {
+                for (let x = 0; x < this.cells[y].length; x++) {
+                    if (this.getCluster(x, y).length > 1) return;
+                }
+            }
 
-            if (isSmthLeft) return;
             this.cells.length ? alert('game over') : alert('you win');
         };
 
@@ -121,6 +133,15 @@
             return neighbours;
         };
 
+        operateNeighbor(coords, nbCoords, neighbours) {
+            if (this.cells[nbCoords.y] && this.cells[nbCoords.y][nbCoords.x]
+                && !this.cells[nbCoords.y][nbCoords.x].isChecked
+                && this.cells[nbCoords.y][nbCoords.x].color === this.cells[coords.y][coords.x].color) {
+                neighbours.push(nbCoords);
+            }
+            return neighbours;
+        }
+
         getCluster(x, y) {
             let cluster = this.getSubCluster(x, y);
             cluster.forEach(coords => {
@@ -152,7 +173,7 @@
             this.possibleScoreDom.textContent = this.getCount(cluster);
 
             cluster.forEach(coords => {
-                this.cells[coords[1]][coords[0]].dom.classList.add(ACTIVE_CLASS);
+                this.cells[coords[1]][coords[0]].dom.classList.add(CLASSES.ACTIVE);
             });
         };
 
@@ -160,8 +181,8 @@
             let cluster = this.getCluster(x, y);
             this.possibleScoreDom.textContent = 0;
 
-            cluster.forEach(rows => {
-                this.cells[rows[1]][rows[0]].dom.classList.remove(ACTIVE_CLASS);
+            cluster.forEach(coords => {
+                this.cells[coords[1]][coords[0]].dom.classList.remove(CLASSES.ACTIVE);
             });
         };
 
@@ -193,35 +214,5 @@
         };
     }
 
-    window.Balls = Balls;
-
-    function getRandom(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
-    }
-
-    const addEvent = (obj, eventName, handler) => {
-        const handlerWrapper = event => {
-            event = event || window.event;
-            if (!event.target && event.srcElement) {
-                event.target = event.srcElement;
-            }
-            return handler.call(obj, event);
-        };
-        if (obj.addEventListener) {
-            obj.addEventListener(eventName, handlerWrapper, false);
-        } else if (obj.attachEvent) {
-            obj.attachEvent('on' + eventName, handlerWrapper);
-        }
-        return handlerWrapper;
-    }
-
-    function removeEvent(obj, eventName, handler) {
-        if (obj.removeEventListener) {
-            obj.removeEventListener(eventName, handler);
-        } else if (obj.detachEvent) {
-            obj.detachEvent("on" + eventName, handler);
-        }
-    }
-
-    addEvent(window, 'load', () => new Balls());
+    window.addEventListener('load', () => new Balls(), false);
 }());
