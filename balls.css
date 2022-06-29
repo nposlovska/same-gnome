@@ -14,15 +14,18 @@ body {
     background: var(--background-color);
     font-family: sans-serif;
 }
+
 .cell {
     width: var(--cell-size);
     height: var(--cell-size);
     float: left;
     text-align: center;
 }
+
 .active {
     background: #000;
 }
+
 .row {
     clear: both;
     overflow: hidden;
@@ -47,19 +50,17 @@ body {
     min-width: 50px;
     background: var(--white-color);
     text-align: center;;
- }
+}
 
-#table {
-    margin: 0 auto;
-    display: inline-block;
-    clear: both;
+#grid {
     transform: rotate(270deg);
     min-height: 960px;
     min-width: 644px;
     position: absolute;
     left: 170px;
-    top: 4px;
+    top: 0;
 }
+
 .ball {
     width: var(--ball-size);
     height: var(--ball-size);
@@ -67,18 +68,22 @@ body {
     border-radius: 15px;
     cursor: pointer;
 }
+
 .blue .ball {
     background: radial-gradient(var(--white-color), var(--blue-color));
     border-color: var(--blue-color);
 }
+
 .red .ball {
     background: radial-gradient(var(--white-color), var(--red-color));
     border-color: var(--red-color);
 }
+
 .yellow .ball {
     background: radial-gradient(var(--white-color), var(--yellow-color));
     border-color: var(--yellow-color);
 }
+
 .green .ball {
     background: radial-gradient(var(--white-color), var(--green-color));
     border-color: var(--green-color);

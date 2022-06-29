@@ -7,7 +7,7 @@
         BALL: 'ball',
         CELL: 'cell',
         ROW: 'row',
-        TABLE: 'table',
+        GRID: 'grid',
         CURRENT_SCORE: 'current',
         POSSIBLE_SCORE: 'possible',
         BEST_SCORE: 'best'
@@ -28,12 +28,12 @@
     }
 
     class Balls {
-        tableDom = document.getElementById(CLASSES.TABLE);
+        gridDom = document.getElementById(CLASSES.GRID);
         scoreDom = document.getElementById(CLASSES.CURRENT_SCORE);
         possibleScoreDom = document.getElementById(CLASSES.POSSIBLE_SCORE);
         bestScoreDom = document.getElementById(CLASSES.BEST_SCORE);
-        sizeX = 10;
-        sizeY = 15;
+        sizeX = 20;
+        sizeY = 30;
         score = 0;
         cells = [];
 
@@ -50,10 +50,10 @@
 
                 this.cells[y] = [];
                 for (let x = 0; x < this.sizeX; x++) {
-                    let cell = createProto(CLASSES.CELL);
+                    const cell = createProto(CLASSES.CELL);
                     cell.appendChild(createProto(CLASSES.BALL));
 
-                    let colorNumber = getRandom(0, COLORS.length);
+                    const colorNumber = getRandom(0, COLORS.length);
                     cell.classList.add(COLORS[colorNumber]);
                     row.appendChild(cell);
 
@@ -62,31 +62,31 @@
                     };
                 }
 
-                this.tableDom.appendChild(row);
+                this.gridDom.appendChild(row);
             }
             this.bindEvents();
         };
 
         getCoordinates(element) {
-            let x = getIndex(element.parentElement);
-            let y = getIndex(element.parentElement.parentElement);
+            const x = getIndex(element.parentElement);
+            const y = getIndex(element.parentElement.parentElement);
             return [x, y];
         }
 
         bindEvents() {
-            this.tableDom.addEventListener('mouseover', e => {
+            this.gridDom.addEventListener('mouseover', e => {
                 if (e.target.classList.contains(CLASSES.BALL)) {
                     this.showCluster(...this.getCoordinates(e.target));
                 }
             }, false);
 
-            this.tableDom.addEventListener('mouseout', e => {
+            this.gridDom.addEventListener('mouseout', e => {
                 if (e.target.classList.contains(CLASSES.BALL)) {
                     this.hideCluster(...this.getCoordinates(e.target));
                 }
             }, false);
 
-            this.tableDom.addEventListener('click', e => {
+            this.gridDom.addEventListener('click', e => {
                 if (e.target.classList.contains(CLASSES.BALL)) {
                     this.removeCluster(...this.getCoordinates(e.target));
                 }
@@ -108,7 +108,7 @@
         };
 
         getNeighbors(x, y) {
-            let neighbours = [];
+            const neighbours = [];
 
             //left neighbour within borders
             if (x > 0 && this.cells[y] && this.cells[y][x - 1]) {
@@ -133,34 +133,20 @@
             return neighbours;
         };
 
-        operateNeighbor(coords, nbCoords, neighbours) {
-            if (this.cells[nbCoords.y] && this.cells[nbCoords.y][nbCoords.x]
-                && !this.cells[nbCoords.y][nbCoords.x].isChecked
-                && this.cells[nbCoords.y][nbCoords.x].color === this.cells[coords.y][coords.x].color) {
-                neighbours.push(nbCoords);
-            }
-            return neighbours;
-        }
-
         getCluster(x, y) {
-            let cluster = this.getSubCluster(x, y);
-            cluster.forEach(coords => {
-                this.cells[coords[1]][coords[0]].is_checked = false;
+            const cluster = this.getSubCluster(x, y);
+            cluster.forEach(([cl_x, cl_y]) => {
+                this.cells[cl_y][cl_x].isChecked = false;
             });
             return cluster;
         };
 
-        getSubCluster(x, y, cl) {
-            let cluster = cl || [];
+        getSubCluster(x, y, cluster = []) {
             cluster.push([x, y]);
-            this.cells[y][x].is_checked = true;
+            this.cells[y][x].isChecked = true;
 
-            let nb = this.getNeighbors(x, y);
-            nb.forEach(coords => {
-                let nb_y = coords[1];
-                let nb_x = coords[0];
-
-                if (this.cells[nb_y][nb_x].color === this.cells[y][x].color && !this.cells[nb_y][nb_x].is_checked) {
+            this.getNeighbors(x, y).forEach(([nb_x, nb_y]) => {
+                if (this.cells[nb_y][nb_x].color === this.cells[y][x].color && !this.cells[nb_y][nb_x].isChecked) {
                     this.getSubCluster(nb_x, nb_y, cluster);
                 }
             });
@@ -172,8 +158,8 @@
             if (cluster.length < 2) return;
             this.possibleScoreDom.textContent = this.getCount(cluster);
 
-            cluster.forEach(coords => {
-                this.cells[coords[1]][coords[0]].dom.classList.add(CLASSES.ACTIVE);
+            cluster.forEach(([cl_x, cl_y]) => {
+                this.cells[cl_y][cl_x].dom.classList.add(CLASSES.ACTIVE);
             });
         };
 
@@ -181,8 +167,8 @@
             let cluster = this.getCluster(x, y);
             this.possibleScoreDom.textContent = 0;
 
-            cluster.forEach(coords => {
-                this.cells[coords[1]][coords[0]].dom.classList.remove(CLASSES.ACTIVE);
+            cluster.forEach(([cl_x, cl_y]) => {
+                this.cells[cl_y][cl_x].dom.classList.remove(CLASSES.ACTIVE);
             });
         };
 
@@ -194,18 +180,20 @@
             this.scoreDom.textContent = this.score;
             this.possibleScoreDom.textContent = 0;
 
-            cluster.sort((a, b) => b[0] === a[0] ? b[1] - a[1] : b[0] - a[0]);
+            // compare y coordinate first, then x one
+            cluster.sort((a, b) => b[1] === a[1] ? b[0] - a[0] : b[1] - a[1]);
 
-            cluster.forEach(coords => {
-                let rowDom = this.tableDom.children[coords[1]];
-                rowDom.removeChild(this.cells[coords[1]][coords[0]].dom);
+            cluster.forEach(([cl_x, cl_y]) => {
+                let rowDom = this.gridDom.children[cl_y];
+                rowDom.removeChild(this.cells[cl_y][cl_x].dom);
 
-                this.cells[coords[1]].splice(coords[0], 1);
-                if (!this.cells[coords[1]].length) {
-                    this.tableDom.removeChild(rowDom);
-                    this.cells.splice(coords[1], 1);
+                this.cells[cl_y].splice(cl_x, 1);
+                if (!this.cells[cl_y].length) {
+                    this.gridDom.removeChild(rowDom);
+                    this.cells.splice(cl_y, 1);
                 }
             });
+
             if (!localStorage.ballScore || localStorage.ballScore < this.score) {
                 localStorage.ballScore = this.score;
                 this.bestScoreDom.textContent = this.score || 0;
